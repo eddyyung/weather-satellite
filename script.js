@@ -1,51 +1,52 @@
-// 載入天氣數據
-function loadWeatherData() {
-    const apiKey = 'CWA-2C39FF03-6175-4B8C-B7EA-83DC00BCBAD0'; // 用你自己的API密鑰
-    const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/W-C0033-001?Authorization=${apiKey}`;
-
-    fetch(url)
+// 載入風災警報數據
+function loadHazardData() {
+    const apiUrl = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/W-C0033-001?Authorization=CWA-2C39FF03-6175-4B8C-B7EA-83DC00BCBAD0'; // 替換成你的中央氣象署API URL
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            const weatherInfo = document.getElementById('weather-info');
-            weatherInfo.innerHTML = `
-                <p>地點：${data.name}</p>
-                <p>天氣：${data.weather[0].description}</p>
-                <p>氣溫：${data.main.temp}°C</p>
-                <p>濕度：${data.main.humidity}%</p>
-            `;
+            const hazardInfo = document.getElementById('hazard-info');
+            if (data.success === "true" && data.result) {
+                let hazardDetails = '';
+                data.records.location.forEach(location => {
+                    const locationName = location.locationName;
+                    const hazards = location.hazardConditions.hazards;
+
+                    if (hazards.length > 0) {
+                        hazards.forEach(hazard => {
+                            const phenomena = hazard.info.phenomena;
+                            const significance = hazard.info.significance;
+                            const startTime = hazard.validTime.startTime;
+                            const endTime = hazard.validTime.endTime;
+                            hazardDetails += `
+                                <p><strong>${locationName}</strong></p>
+                                <p>現象: ${phenomena}</p>
+                                <p>警報級別: ${significance}</p>
+                                <p>生效時間: ${startTime} 至 ${endTime}</p>
+                                <hr>
+                            `;
+                        });
+                    } else {
+                        hazardDetails += `<p><strong>${locationName}</strong> 無風災警報</p><hr>`;
+                    }
+                });
+                hazardInfo.innerHTML = hazardDetails;
+            } else {
+                hazardInfo.innerHTML = '<p>無法載入風災警報資料</p>';
+            }
         })
         .catch(error => {
-            console.error('天氣數據載入錯誤:', error);
-            const weatherInfo = document.getElementById('weather-info');
-            weatherInfo.innerHTML = '<p>無法載入天氣數據</p>';
+            console.error('風災警報數據載入錯誤:', error);
+            const hazardInfo = document.getElementById('hazard-info');
+            hazardInfo.innerHTML = '<p>無法載入風災警報資料</p>';
         });
 }
 
-// 載入衛星雲圖
-function loadSatelliteImage() {
-    const satelliteUrl = 'https://api.nasa.gov/planetary/earth/imagery?lon=121.5654&lat=25.0330&dim=0.10&api_key=YOUR_NASA_API_KEY';
-    
-    fetch(satelliteUrl)
-        .then(response => response.json())
-        .then(data => {
-            const satelliteImage = document.getElementById('satellite-image');
-            satelliteImage.innerHTML = `<img src="${data.url}" alt="衛星雲圖" style="width:100%; height:auto;">`;
-        })
-        .catch(error => {
-            console.error('衛星雲圖載入錯誤:', error);
-            const satelliteImage = document.getElementById('satellite-image');
-            satelliteImage.innerHTML = '<p>無法載入衛星雲圖</p>';
-        });
-}
-
-// 定期更新天氣與衛星雲圖
+// 定期更新風災警報
 setInterval(() => {
-    loadWeatherData();
-    loadSatelliteImage();
+    loadHazardData();
 }, 60000); // 每60秒更新一次
 
 // 初始化載入
 window.onload = () => {
-    loadWeatherData();
-    loadSatelliteImage();
+    loadHazardData();
 };
