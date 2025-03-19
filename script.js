@@ -1,6 +1,6 @@
 // 載入天氣數據
 function loadWeatherData() {
-    const apiKey = 'YOUR_API_KEY'; // 用你自己的API密鑰
+    const apiKey = 'CWA-2C39FF03-6175-4B8C-B7EA-83DC00BCBAD0'; // 用你自己的API密鑰
     const city = 'Taipei';
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=zh_tw`;
 
