@@ -1,7 +1,7 @@
 // 載入天氣數據
 function loadWeatherData() {
     const apiKey = 'CWA-2C39FF03-6175-4B8C-B7EA-83DC00BCBAD0'; // 用你自己的API密鑰
-    const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/W-C0033-001?Authorization=${apiKey}&limit=100&locationName=%E8%87%BA%E5%8C%97%E5%B8%82,%E6%96%B0%E5%8C%97%E5%B8%82,%E6%A1%83%E5%9C%92%E5%B8%82,%E8%87%BA%E4%B8%AD%E5%B8%82&phenomena=`;
+    const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/W-C0033-001?Authorization=${apiKey}`;
 
     fetch(url)
         .then(response => response.json())
